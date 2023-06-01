@@ -50,6 +50,40 @@ You will be presented with your public SSH key so you can copy, and add it to yo
 6. Done! Now you can go to the workspace you chose for the account `/Users/savaryna/code/email` in this example, and all the GIT
 commands issued from this and children directories will automatically use the correct account.
 
+## ⚠️ Possible next steps
+
+The ssh config file will be generated with two hosts, both named `*`. This appears to not work if both sources are github.com, it will always take the first in the config with the second claiming lack of permissions (tested by swapping the order in the config which worked).
+
+The individual records need naming, and a HostName entry added, like so:
+
+```
+# Config for GIT account {{email1}}
+Host {{hostname1, e.g. github-one}}
+  HostName github.com
+  AddKeysToAgent yes
+  IdentityFile C:\Users\{{user}}\.ssh\{{sshkeyfile1}}
+  
+# Config for GIT account {{email2}}
+Host {{hostname2, e.g. github-two}}
+  HostName github.com
+  AddKeysToAgent yes
+  IdentityFile C:\Users\{{user}}\.ssh\{{sshkeyfile2}}
+```
+
+Then when cloning from GitHub, rather than:
+
+`git@github.com:{{username}}/{{repo-url}}.git`
+
+it should become:
+
+`git@github-one:{{username}}/{{repo-url}}.git`
+
+and
+
+`git@github-two:{{username}}/{{repo-url}}.git`
+
+respectively. If the repo has already been cloned this can be amended in the `.git/config` file inside the repos local directory.
+
 ## How it works
 
 A simple way to use multiple git accounts on one machine is to use multiple SSH keys configured with different hosts. The way [@savaryna/add-git-account](https://www.npmjs.com/package/@savaryna/git-add-account) works is, it asks you for some basic information and then:
